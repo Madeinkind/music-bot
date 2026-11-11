@@ -1,7 +1,15 @@
 # 🎵 Music Bot
 
+[![CI](https://github.com/Madeinkind/music-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/Madeinkind/music-bot/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![discord.py](https://img.shields.io/badge/discord.py-2.7-5865F2?logo=discord&logoColor=white)](https://github.com/Rapptz/discord.py)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Музыкальный бот для Discord на **Python 3.11+**: `discord.py` 2.x + `yt-dlp` + `ffmpeg`.
 Интерфейс полностью на русском, поддерживаются и слэш-команды (`/play`), и обычные текстовые (`!play`).
+
+> **Коротко:** `/play <название или ссылка>` — бот заходит в ваш канал и играет.
+> Очередь, кнопки, повтор, перемотка, громкость и поиск уже в комплекте.
 
 ## Возможности
 
@@ -170,6 +178,27 @@ tests/              — быстрые тесты логики (без сети)
 
 ## Частые проблемы
 
+### Бот в канале, но нет звука
+
+Сначала выполните `/voicecheck` — команда покажет канал, статус воспроизведения, права `Connect`/`Speak`,
+серверный мут/оглушение и версии `PyNaCl`/`davey`.
+
+Если всё зелёное, но звука нет, почти всегда виноваты несовместимые версии голосовых зависимостей:
+`discord.py 2.7.x` собран под `davey 0.x` и `PyNaCl < 1.6`. С `davey 0.2.x` или `PyNaCl 1.6+`
+бот «играет», но в канал уходит тишина. Проверьте, что установлено ровно это:
+
+```bash
+pip install "davey>=0.1.0,<0.2" "PyNaCl>=1.5.0,<1.6"
+```
+
+Остальное по мелочи:
+
+- права `Connect` и `Speak` у роли бота в этом канале;
+- правый клик по боту → «Громкость пользователя» — не 0 %;
+- вы сами не в режиме «Отключить звук»;
+- `ffmpeg -version` работает из той же среды, где запущен бот;
+- `logs/bot.log` — там будут ошибки yt-dlp и ffmpeg.
+
 ### YouTube: «Sign in to confirm you're not a bot»
 
 YouTube всё чаще требует авторизацию. Решение — cookies:
@@ -185,12 +214,6 @@ YouTube всё чаще требует авторизацию. Решение �
 
 Установите ffmpeg (см. раздел 2) **или** выполните `pip install imageio-ffmpeg`.
 Можно указать путь явно: `FFMPEG_PATH=C:\ffmpeg\bin\ffmpeg.exe`.
-
-### Бот в канале, но нет звука
-
-- Проверьте права `Connect` и `Speak` у роли бота в этом канале.
-- Убедитесь, что `ffmpeg -version` работает из той же среды, где запущен бот.
-- Посмотрите `logs/bot.log` — там будут ошибки yt-dlp и ffmpeg.
 
 ### Слэш-команды не появились
 
