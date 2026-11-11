@@ -154,6 +154,7 @@ def help_embed(prefix: str) -> discord.Embed:
             ("join", "Подключиться к вашему каналу"),
             ("leave", "Отключиться и очистить очередь"),
             ("volume <0-200>", "Громкость воспроизведения"),
+            ("voicecheck", "Диагностика голосового подключения"),
         ],
     }
     for name, entries in groups.items():

@@ -115,6 +115,15 @@ class MusicPlayer:
         except discord.ClientException as exc:
             raise VoiceError(f"Не удалось подключиться к каналу: {exc}") from exc
         self._cancel_idle()
+        state = self.guild.me.voice if self.guild.me is not None else None
+        log.info(
+            "Подключился к каналу %s (server_mute=%s, server_deaf=%s, self_mute=%s, self_deaf=%s)",
+            self.voice.channel if self.voice else "?",
+            getattr(state, "mute", None),
+            getattr(state, "deaf", None),
+            getattr(state, "self_mute", None),
+            getattr(state, "self_deaf", None),
+        )
 
     async def disconnect(self) -> None:
         self._cancel_idle()

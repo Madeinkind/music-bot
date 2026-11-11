@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import discord
@@ -38,6 +40,13 @@ async def _reply(
             await ctx.interaction.response.send_message(embed=embed, view=view, ephemeral=ephemeral)
     else:
         await ctx.reply(embed=embed, view=view)
+
+
+def _package_version(name: str) -> str:
+    try:
+        return version(name)
+    except PackageNotFoundError:
+        return "нет"
 
 
 class Music(commands.Cog):
@@ -302,6 +311,62 @@ class Music(commands.Cog):
             return
         volume = player.set_volume(level)
         await _reply(ctx, embeds.success(f"Громкость: **{volume}%**."))
+
+    @commands.hybrid_command(
+        name="voicecheck",
+        aliases=["vcheck", "диагностика"],
+        description="Проверить голосовое подключение и звук",
+    )
+    @commands.guild_only()
+    async def voicecheck(self, ctx: commands.Context) -> None:
+        """Показывает состояние голосового подключения и окружения."""
+
+        if ctx.guild is None:
+            return
+
+        player = self._existing(ctx)
+        lines: list[str] = []
+
+        if player is None or not player.is_connected or player.voice is None:
+            lines.append("**Подключение:** бот не в голосовом канале.")
+        else:
+            channel = player.voice.channel
+            if player.voice.is_paused():
+                playback = "пауза"
+            elif player.voice.is_playing():
+                playback = "идёт"
+            else:
+                playback = "нет"
+            lines.append(f"**Канал:** {channel.mention if channel else '?'}")
+            lines.append(f"**Воспроизведение:** {playback}")
+            lines.append(f"**Громкость бота:** {player.volume}%")
+
+            me = ctx.guild.me
+            if me is not None and channel is not None:
+                perms = channel.permissions_for(me)
+                lines.append(
+                    "**Права бота:** подключаться — "
+                    f"{'да' if perms.connect else 'НЕТ'}, говорить — {'да' if perms.speak else 'НЕТ'}"
+                )
+                state = me.voice
+                if state is not None:
+                    lines.append(
+                        "**Состояние:** "
+                        f"заглушён сервером — {'да' if state.mute else 'нет'}, "
+                        f"оглушён сервером — {'да' if state.deaf else 'нет'}, "
+                        f"самоглушение — {'да' if state.self_deaf else 'нет'}"
+                    )
+            lines.append(f"**Задержка голоса:** {player.voice.average_latency:.0f} мс")
+
+        lines.append(f"**Opus:** {'загружен' if discord.opus.is_loaded() else 'ещё не загружался'}")
+        lines.append(f"**ffmpeg:** `{Path(self.bot.ffmpeg_path).name}`")
+        lines.append(f"**PyNaCl:** {_package_version('PyNaCl')} | **davey:** {_package_version('davey')}")
+        lines.append("")
+        lines.append(
+            "Если всё в порядке, но звука нет: правый клик по боту → «Громкость пользователя» "
+            "и проверьте, что вы сами не в режиме «Отключить звук»."
+        )
+        await _reply(ctx, embeds.info("\n".join(lines), title="Диагностика голоса"), ephemeral=True)
 
     @commands.hybrid_command(name="help", aliases=["помощь", "commands"], description="Список команд")
     async def help(self, ctx: commands.Context) -> None:

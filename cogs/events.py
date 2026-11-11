@@ -49,6 +49,16 @@ class Events(commands.Cog):
     ) -> None:
         if self.bot.user is None or member.id != self.bot.user.id:
             return
+
+        log.info(
+            "Голосовое состояние бота: канал=%s, server_mute=%s, server_deaf=%s, self_mute=%s, self_deaf=%s",
+            after.channel.name if after.channel else None,
+            after.mute,
+            after.deaf,
+            after.self_mute,
+            after.self_deaf,
+        )
+
         if after.channel is not None:
             return
         # Бота отключили или выгнали из канала — сбрасываем состояние плеера.
