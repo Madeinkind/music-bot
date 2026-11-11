@@ -1,0 +1,11 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      # Для YouTube-авторизации положите cookies.txt рядом с docker-compose.yml
+      # и раскомментируйте строку ниже.
+      # - ./cookies.txt:/app/cookies.txt:ro
