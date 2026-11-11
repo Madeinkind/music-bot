@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import discord
 
 from music.track import Track
 from utils.formatting import format_duration, progress_bar, truncate
-
-if TYPE_CHECKING:
-    from discord.ext import commands
 
 COLOR_PRIMARY = 0x5865F2
 COLOR_SUCCESS = 0x57F287
@@ -130,7 +127,7 @@ def queue_embed(player: Any, page: int = 1) -> tuple[discord.Embed, int]:
     return embed, pages
 
 
-def help_embed(bot: commands.Bot, prefix: str) -> discord.Embed:
+def help_embed(prefix: str) -> discord.Embed:
     embed = base(
         "Музыкальный бот",
         f"Префикс команд: `{prefix}` (или упоминание бота). "

@@ -305,7 +305,7 @@ class Music(commands.Cog):
 
     @commands.hybrid_command(name="help", aliases=["помощь", "commands"], description="Список команд")
     async def help(self, ctx: commands.Context) -> None:
-        await _reply(ctx, embeds.help_embed(self.bot, self.bot.config.prefix), ephemeral=True)
+        await _reply(ctx, embeds.help_embed(self.bot.config.prefix), ephemeral=True)
 
     # ------------------------------------------------------------------ ошибки слэш-команд
 
