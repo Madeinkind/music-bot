@@ -109,7 +109,7 @@ class MusicPlayer:
                 await self.voice.move_to(channel)
             return
         try:
-            self.voice = await channel.connect(self_deaf=True, timeout=20.0)
+            self.voice = await channel.connect(self_deaf=self.bot.config.self_deaf, timeout=20.0)
         except TimeoutError as exc:
             raise VoiceError("Не удалось подключиться к голосовому каналу (таймаут).") from exc
         except discord.ClientException as exc:

@@ -47,6 +47,18 @@ def _get_optional_int(name: str) -> int | None:
         raise ConfigError(f"Переменная {name} должна быть числом (ID сервера), получено: {raw!r}") from exc
 
 
+def _get_bool(name: str, default: bool) -> bool:
+    raw = _get_raw(name)
+    if raw is None:
+        return default
+    lowered = raw.lower()
+    if lowered in {"1", "true", "yes", "on", "да"}:
+        return True
+    if lowered in {"0", "false", "no", "off", "нет"}:
+        return False
+    raise ConfigError(f"Переменная {name} должна быть true или false, получено: {raw!r}")
+
+
 def _get_color(name: str, default: int) -> int:
     raw = _get_raw(name)
     if raw is None:
@@ -76,6 +88,7 @@ class Config:
     idle_timeout: int = 300
     embed_color: int = 0x5865F2
     log_level: str = "INFO"
+    self_deaf: bool = True
 
 
 def load_config() -> Config:
@@ -108,4 +121,5 @@ def load_config() -> Config:
         idle_timeout=_get_int("IDLE_TIMEOUT", 300, minimum=0, maximum=86_400),
         embed_color=_get_color("EMBED_COLOR", 0x5865F2),
         log_level=log_level,
+        self_deaf=_get_bool("SELF_DEAF", True),
     )
