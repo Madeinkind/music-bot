@@ -33,13 +33,14 @@ async def _reply(
 ) -> None:
     """Отвечает и на слэш-, и на префиксную команду."""
 
+    extra = {} if view is None else {"view": view}
     if ctx.interaction is not None:
         if ctx.interaction.response.is_done():
-            await ctx.interaction.followup.send(embed=embed, view=view, ephemeral=ephemeral)
+            await ctx.interaction.followup.send(embed=embed, ephemeral=ephemeral, **extra)
         else:
-            await ctx.interaction.response.send_message(embed=embed, view=view, ephemeral=ephemeral)
+            await ctx.interaction.response.send_message(embed=embed, ephemeral=ephemeral, **extra)
     else:
-        await ctx.reply(embed=embed, view=view)
+        await ctx.reply(embed=embed, **extra)
 
 
 def _package_version(name: str) -> str:

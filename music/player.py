@@ -226,6 +226,13 @@ class MusicPlayer:
         self.voice.play(source, after=lambda err, gen=generation: self._after_track(gen, err))
         self._playing_since = time.time()
         self._paused_at = None
+        log.info(
+            "Воспроизведение: %s (%s), громкость %d%%, смещение %d с",
+            track.title,
+            track.duration_text,
+            self._volume,
+            track.start_offset,
+        )
 
     def _after_track(self, generation: int, error: Exception | None) -> None:
         """Вызывается из потока ffmpeg после окончания трека."""

@@ -100,3 +100,34 @@ def test_friendly_errors() -> None:
     message = YTDLSource._friendly_error("Sign in to confirm you're not a bot")
     assert "cookies" in message.lower()
     assert "приватное" in YTDLSource._friendly_error("This video is private")
+
+
+def test_reply_does_not_pass_none_view() -> None:
+    """Регрессия: send_message(view=None) падал с AttributeError в discord.py."""
+
+    import asyncio
+    import types
+
+    from cogs.music import _reply
+    from utils import embeds
+
+    class Response:
+        def __init__(self) -> None:
+            self.done = False
+            self.payload: dict[str, object] | None = None
+
+        def is_done(self) -> bool:
+            return self.done
+
+        async def send_message(self, **kwargs: object) -> None:
+            self.payload = kwargs
+
+    response = Response()
+    ctx = types.SimpleNamespace(interaction=types.SimpleNamespace(response=response))
+
+    asyncio.run(_reply(ctx, embeds.info("проверка"), ephemeral=True))
+
+    assert response.payload is not None
+    assert "view" not in response.payload
+    assert response.payload["ephemeral"] is True
+
