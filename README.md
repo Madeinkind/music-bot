@@ -1,3 +1,5 @@
+<img src="assets/banner.svg" alt="Music Bot" width="100%">
+
 # 🎵 Music Bot
 
 [![CI](https://github.com/Madeinkind/music-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/Madeinkind/music-bot/actions/workflows/ci.yml)
